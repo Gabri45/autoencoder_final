@@ -1,0 +1,58 @@
+# Quick evaluation: NEW trajectories → OLD models (no folding report needed).
+#
+# Usage:
+#   python evaluate.py --config configs/eval_new_quick.yaml
+
+project:
+  output_dir: ./outputs/test
+  seed: 42
+
+data:
+  conf_dir: /home/gabriele/RMD_HN/rna/conf
+  data_dir: /home/gabriele/RMD_HN/rna/data
+  trajectory_glob: "iter_*/ratchet_*/merged_trajectory.xtc"
+  topology_glob: "files/init_conf.gro"
+  stride: 1
+  recompute_features: false
+
+features:
+  encoder: rna_g4_enriched
+  cache_prefix: features_mixed
+
+training:
+  mode: ensemble
+  device: cuda
+
+monitoring:
+  log_every_epochs: 1
+  plot_every_epochs: 10
+  save_csv: true
+  flush_stdout: true
+
+evaluation:
+  mode: auto
+  plots:
+    overview_4panel: false
+    uncertainty: false
+    hamming: false
+    trajectory_grid_5x5: false
+    landscape_grid_5x10: false
+    confidence: false
+    confidence_grid: false
+    folded_only_4panel: false
+    landscape_comparison: false
+  by_target:
+    enabled: false
+  new_dataset:
+    enabled: true
+    data_dir: /home/gabriele/RMD_HN/rna/data
+    trajectory_glob: "iter_*/ratchet_*/merged_trajectory.xtc"
+    # folding_report: not needed for quick mode
+    per_target: false
+    plot_latent_overview: true
+    plot_landscape_grid: true
+    plot_uncertainty: true
+    landscape_grid_ncols: 5
+    cache_prefix: features_new
+    output_subdir: new_dataset
+    recompute_features: true

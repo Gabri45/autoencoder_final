@@ -1,0 +1,16 @@
+{
+  "mode": "single",
+  "elapsed_seconds": 0.6177959442138672,
+  "best_models": {
+    "0": {
+      "model_id": 0,
+      "best_epoch": 2,
+      "val_loss": 29.825411796569824,
+      "checkpoint": "/media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/autoencoder_final/outputs/smoke_test/vae_model.pt"
+    }
+  },
+  "checkpoints": [
+    "/media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/autoencoder_final/outputs/smoke_test/vae_model.pt"
+  ],
+  "output_dir": "/media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/autoencoder_final/outputs/smoke_test"
+}

@@ -1,0 +1,66 @@
+# Ensemble VAE training (production default).
+# Produces ensemble_model_*.pt and ensemble_scaler.pkl in output_dir.
+
+project:
+  output_dir: ./outputs/rmd_hn_ensemble
+  seed: 42
+
+data:
+  data_dir: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/rna/data
+  conf_dir: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/rna/conf
+  trajectory_glob: "iter_*/ratchet_*/md_noPBC.xtc"
+  topology_glob: "init_conf.gro"
+  stride: 1
+  recompute_features: false
+
+features:
+  encoder: rna_g4_enriched
+  params:
+    hbond_cutoff: 0.35
+  cache_prefix: features_mixed
+
+training:
+  mode: ensemble
+  n_ensemble: 5
+  epochs: 200
+  batch_size: 128
+  lr: 0.001
+  val_split: 0.3
+  device: cuda
+  early_stopping:
+    patience: 20
+  loss:
+    beta_max: 1.0
+    warmup_epochs: 50
+    gamma: 1.0
+    margin: 1.0
+    free_bits: 0.5
+  model:
+    latent_dim: 2
+    n_classes: 5
+
+monitoring:
+  log_every_epochs: 1
+  plot_every_epochs: 10
+  save_csv: true
+  flush_stdout: true
+
+evaluation:
+  mode: auto
+  plots:
+    overview_4panel: true
+    uncertainty: true
+    hamming: true
+    trajectory_grid_5x5: true
+    landscape_grid_5x10: true
+    confidence: false
+    confidence_grid: false
+    folded_only_4panel: true
+    landscape_comparison: true
+  by_target:
+    enabled: false
+    folding_report: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/Structure_Analysis/folding_by_target.txt
+  new_dataset:
+    enabled: false
+    data_dir: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/ratchet_simulation_classic_1KF1/rna/data
+    folding_report: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/ratchet_simulation_classic_1KF1/folding_by_target.txt

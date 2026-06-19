@@ -1,0 +1,9 @@
+TrainingMonitor initialized
+Output directory: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/autoencoder_final/outputs/smoke_test
+Saved scaler to /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/autoencoder_final/outputs/smoke_test/scaler.pkl
+Training single model on cpu
+[model 0] Epoch    1: Train=29.0366, Val=30.0280, β=0.250
+[model 0] Epoch    2: Train=28.6117, Val=29.8254, β=0.250
+Best val loss 29.8254 at epoch 2
+Training complete in 0.6s
+Summary saved to /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/autoencoder_final/outputs/smoke_test/training_summary.json

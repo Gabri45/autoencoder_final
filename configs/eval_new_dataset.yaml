@@ -1,0 +1,63 @@
+# Evaluate NEW trajectories with OLD trained models.
+#
+# Prerequisites in project.output_dir:
+#   ensemble_model_*.pt, ensemble_scaler.pkl
+#
+# Usage:
+#   python evaluate.py --config configs/eval_new_dataset.yaml
+
+project:
+  output_dir: ./outputs/test
+  seed: 42
+
+data:
+  # Only conf_dir is needed (reference PDBs for plots)
+  data_dir: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/rna/data
+  conf_dir: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/RMD_HN/rna/conf
+  trajectory_glob: "iter_*/ratchet_*/md_noPBC.xtc"
+  topology_glob: "init_conf.gro"
+  stride: 1
+  recompute_features: false
+
+features:
+  encoder: rna_g4_enriched
+  params:
+    hbond_cutoff: 0.35
+  cache_prefix: features_mixed
+
+training:
+  mode: ensemble
+  device: cuda
+
+monitoring:
+  log_every_epochs: 1
+  plot_every_epochs: 10
+  save_csv: true
+  flush_stdout: true
+
+evaluation:
+  mode: auto
+  # Skip all training-dataset plots
+  plots:
+    overview_4panel: false
+    uncertainty: false
+    hamming: false
+    trajectory_grid_5x5: false
+    landscape_grid_5x10: false
+    confidence: false
+    confidence_grid: false
+    folded_only_4panel: false
+    landscape_comparison: false
+  by_target:
+    enabled: false
+  # Only this runs: project new data into old model latent space
+  new_dataset:
+    enabled: true
+    data_dir: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/ratchet_simulation_classic_1KF1/rna/data
+    folding_report: /media/gio/7b5fab34-c6ea-432d-a6c7-bae45e028c9d/SIMULATIONS/SIMULATIONS_GABRIELE/ratchet_simulation_classic_1KF1/folding_by_target.txt
+    trajectory_glob: "iter_*/ratchet_*/md_noPBC.xtc"
+    cache_prefix: features_new
+    output_subdir: new_dataset
+    recompute_features: true
+    white_style: false
+    suffix: "_NEW"
