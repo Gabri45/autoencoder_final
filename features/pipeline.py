@@ -2,7 +2,8 @@
 Feature computation pipeline with disk cache.
 
 Loads or computes features via the registered encoder and caches:
-  {prefix}.npy, {prefix}_meta.json, traj_labels.npy, traj_indices.npy
+  {prefix}.npy, {prefix}_meta.json, {prefix}_signature.json,
+  traj_labels.npy, traj_indices.npy
 
 YAML: features.encoder, features.cache_prefix, data.recompute_features
 """
@@ -11,11 +12,43 @@ from __future__ import annotations
 
 import json
 import os
+from glob import glob
 
 import numpy as np
 
+from features.manifest import save_manifest
 from features.registry import get_encoder
 from utils.trajectories import load_merged_trajectories
+
+
+def _resolve_reference_pdb(config: dict) -> str | None:
+    """Resolve features.params.reference_pdb or pick first PDB from conf_dir."""
+    feat_cfg = config.get("features", {})
+    params = dict(feat_cfg.get("params") or {})
+    ref = params.get("reference_pdb")
+    if ref and os.path.isfile(ref):
+        return ref
+    if ref and not os.path.isabs(ref):
+        candidate = os.path.abspath(ref)
+        if os.path.isfile(candidate):
+            return candidate
+
+    conf_dir = config.get("data", {}).get("conf_dir")
+    if conf_dir and os.path.isdir(conf_dir):
+        pdbs = sorted(glob(os.path.join(conf_dir, "*.pdb")))
+        if pdbs:
+            return pdbs[0]
+    return ref
+
+
+def _encoder_params(config: dict) -> dict:
+    feat_cfg = config.get("features", {})
+    params = dict(feat_cfg.get("params") or {})
+    if feat_cfg.get("encoder") in ("composite", "cmap"):
+        ref = _resolve_reference_pdb(config)
+        if ref:
+            params.setdefault("reference_pdb", ref)
+    return params
 
 
 def load_or_compute_features(config: dict) -> tuple:
@@ -36,6 +69,7 @@ def load_or_compute_features(config: dict) -> tuple:
     prefix = feat_cfg.get("cache_prefix", "features_mixed")
     dist_path = os.path.join(output_dir, f"{prefix}.npy")
     metadata_path = os.path.join(output_dir, f"{prefix}_meta.json")
+    signature_path = os.path.join(output_dir, f"{prefix}_signature.json")
     labels_path = os.path.join(output_dir, "traj_labels.npy")
     indices_path = os.path.join(output_dir, "traj_indices.npy")
 
@@ -56,7 +90,7 @@ def load_or_compute_features(config: dict) -> tuple:
             meta = json.load(f)
         print(
             f"  Shape: {features.shape}, Labels: {len(traj_labels)}, "
-            f"Indices: {len(traj_indices)}"
+            f"Indices: {len(traj_indices)}, encoder={meta.get('encoder', '?')}"
         )
         return (
             features,
@@ -79,7 +113,8 @@ def load_or_compute_features(config: dict) -> tuple:
     if traj is None:
         return None, None, None, None, None
 
-    encoder = get_encoder(feat_cfg["encoder"], **feat_cfg.get("params", {}))
+    encoder_name = feat_cfg["encoder"]
+    encoder = get_encoder(encoder_name, **_encoder_params(config))
     features, meta = encoder.compute(traj)
     n_continuous = meta.n_continuous
     n_binary = meta.n_binary
@@ -87,9 +122,24 @@ def load_or_compute_features(config: dict) -> tuple:
     np.save(dist_path, features)
     np.save(labels_path, traj_labels)
     np.save(indices_path, traj_indices)
+
+    meta_dict = {
+        "n_continuous": n_continuous,
+        "n_binary": n_binary,
+        "encoder": encoder_name,
+        "encoder_info": encoder.describe() if hasattr(encoder, "describe") else {},
+        "n_features": int(features.shape[1]),
+    }
     with open(metadata_path, "w") as f:
-        json.dump({"n_continuous": n_continuous, "n_binary": n_binary}, f)
-    print(f"Saved features to {dist_path}")
+        json.dump(meta_dict, f, indent=2)
+
+    if hasattr(encoder, "get_manifest"):
+        manifest = encoder.get_manifest()
+        if manifest is not None:
+            save_manifest(manifest, signature_path)
+            print(f"Saved signature to {signature_path}")
+
+    print(f"Saved features to {dist_path} (continuous={n_continuous}, binary={n_binary})")
 
     features = np.load(dist_path, mmap_mode="r")
     return features, traj_labels, traj_indices, n_continuous, n_binary

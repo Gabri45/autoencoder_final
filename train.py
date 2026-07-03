@@ -19,6 +19,8 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 from config.loader import load_config
+from features import cmap  # noqa: F401 — register encoder
+from features import composite  # noqa: F401 — register encoder
 from features import rna_g4  # noqa: F401 — register encoder
 from features.pipeline import load_or_compute_features
 from training.ensemble import EnsembleTrainer

@@ -21,6 +21,8 @@ class SemiSupervisedVAE(nn.Module):
         self.latent_dim = latent_dim
         input_dim = n_continuous + n_binary
 
+        self.decoder_bottleneck = max(128, min(512, n_continuous))
+
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, 512),
             nn.BatchNorm1d(512),
@@ -43,14 +45,14 @@ class SemiSupervisedVAE(nn.Module):
             nn.Dropout(0.1),
             nn.Linear(64, 128),
             nn.ReLU(),
-            nn.Linear(128, 240),
+            nn.Linear(128, self.decoder_bottleneck),
             nn.ReLU(),
         )
 
-        self.decoder_cont = nn.Linear(240, n_continuous)
+        self.decoder_cont = nn.Linear(self.decoder_bottleneck, n_continuous)
         if n_binary > 0:
             self.decoder_bin = nn.Sequential(
-                nn.Linear(240, n_binary),
+                nn.Linear(self.decoder_bottleneck, n_binary),
                 nn.Sigmoid(),
             )
 

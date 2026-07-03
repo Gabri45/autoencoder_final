@@ -32,7 +32,7 @@ def compute_g4_distances_full(traj):
     """
     topology = traj.topology
 
-    guanines = [r for r in topology.residues if r.name in ['DG', 'G', 'GUA', 'DGU']]
+    guanines = [r for r in topology.residues if r.name in ['DG', 'G', 'GUA', 'DGU', 'G5']]
     guanines.sort(key=lambda x: x.index)
 
     pairs = []
@@ -69,7 +69,7 @@ def compute_chi_angles(traj):
         angles: np.ndarray of shape (n_frames, n_guanines)
     """
     topology = traj.topology
-    guanines = [r for r in topology.residues if r.name in ['DG', 'G', 'GUA', 'DGU']]
+    guanines = [r for r in topology.residues if r.name in ['DG', 'G', 'GUA', 'DGU', 'G5']]
     guanines.sort(key=lambda x: x.index)
 
     dihedrals = []

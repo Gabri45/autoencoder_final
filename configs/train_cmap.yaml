@@ -1,0 +1,64 @@
+# CMAP-only encoder — fixed top-K soft contacts from reference structure.
+
+project:
+  output_dir: ./outputs/cmap_only
+  seed: 42
+
+data:
+  data_dir: /path/to/trajectories
+  conf_dir: /path/to/reference_pdbs
+  stride: 1
+  recompute_features: true
+
+features:
+  encoder: cmap
+  params:
+    selection: backbone
+    signature_mode: top_k
+    top_k: 500
+    min_residues_apart: 3
+    distance_scale_angstrom: 7.5
+    binary_cutoff: 0.6
+  cache_prefix: features_cmap
+
+training:
+  mode: single
+  epochs: 50
+  batch_size: 128
+  lr: 0.001
+  val_split: 0.3
+  device: cuda
+  early_stopping:
+    patience: 15
+  loss:
+    beta_max: 1.0
+    warmup_epochs: 20
+    gamma: 1.0
+    margin: 1.0
+    free_bits: 0.5
+  model:
+    latent_dim: 2
+    n_classes: 5
+
+monitoring:
+  log_every_epochs: 1
+  plot_every_epochs: 10
+  save_csv: true
+  flush_stdout: true
+
+evaluation:
+  mode: auto
+  plots:
+    overview_4panel: true
+    uncertainty: true
+    hamming: true
+    trajectory_grid_5x5: false
+    landscape_grid_5x10: false
+    confidence: true
+    confidence_grid: false
+    folded_only_4panel: false
+    landscape_comparison: false
+  by_target:
+    enabled: false
+  new_dataset:
+    enabled: false

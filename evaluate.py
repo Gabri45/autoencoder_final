@@ -32,6 +32,8 @@ from evaluation.plots.references import (
     project_reference_pdbs_ensemble,
     project_reference_pdbs_single,
 )
+from features import cmap  # noqa: F401 — register encoder
+from features import composite  # noqa: F401 — register encoder
 from features import rna_g4  # noqa: F401 — register encoder
 
 

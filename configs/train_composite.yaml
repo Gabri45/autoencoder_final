@@ -1,0 +1,64 @@
+# Generalized composite encoder — works for any RNA system with a reference structure.
+# Uses preset rna_general: WC distances + chi + CMAP top-500 + binary masks.
+# Set data.recompute_features: true on first run.
+
+project:
+  output_dir: ./outputs/composite_general
+  seed: 42
+
+data:
+  data_dir: /path/to/trajectories
+  conf_dir: /path/to/reference_pdbs
+  trajectory_glob: "iter_*/ratchet_*/md_noPBC.xtc"
+  topology_glob: "init_conf.gro"
+  stride: 1
+  recompute_features: true
+
+features:
+  encoder: composite
+  params:
+    # reference_pdb: auto from conf_dir/*.pdb if omitted
+    preset: rna_general
+  cache_prefix: features_composite
+
+training:
+  mode: single
+  epochs: 50
+  batch_size: 128
+  lr: 0.001
+  val_split: 0.3
+  device: cuda
+  early_stopping:
+    patience: 15
+  loss:
+    beta_max: 1.0
+    warmup_epochs: 20
+    gamma: 1.0
+    margin: 1.0
+    free_bits: 0.5
+  model:
+    latent_dim: 2
+    n_classes: 5
+
+monitoring:
+  log_every_epochs: 1
+  plot_every_epochs: 10
+  save_csv: true
+  flush_stdout: true
+
+evaluation:
+  mode: auto
+  plots:
+    overview_4panel: true
+    uncertainty: true
+    hamming: true
+    trajectory_grid_5x5: false
+    landscape_grid_5x10: false
+    confidence: true
+    confidence_grid: false
+    folded_only_4panel: false
+    landscape_comparison: false
+  by_target:
+    enabled: false
+  new_dataset:
+    enabled: false

@@ -1,6 +1,78 @@
 # Adding a new encoder
 
-## How it works (4 files)
+## Generalized encoders (recommended)
+
+For any molecular system, use the **composite** or **cmap** encoder via YAML — no new Python file required.
+
+### Composite (`features.encoder: composite`)
+
+```yaml
+features:
+  encoder: composite
+  params:
+    reference_pdb: /path/to/reference.pdb   # optional: auto from data.conf_dir/*.pdb
+    preset: rna_general                     # or rna_g4_enriched
+  cache_prefix: features_composite
+```
+
+**Presets:**
+
+| Preset | Blocks |
+|--------|--------|
+| `rna_g4_enriched` | G4 H-bond distances + guanine χ + binary (same as legacy `rna_g4_enriched`) |
+| `rna_general` | Watson–Crick distances + all χ + CMAP top-500 + binaries |
+
+**Custom blocks:**
+
+```yaml
+features:
+  encoder: composite
+  params:
+    blocks:
+      - type: distance_pairs
+        template: watson_crick          # g4_hoogsteen | watson_crick | all_base_pairs
+        transform: raw_distance         # raw_distance | sigmoid_squared
+        binary_cutoff_nm: 0.35
+        spatial_filter_nm: 0.45         # optional: keep pairs near in reference
+        top_k: 200                      # optional: limit pair count
+
+      - type: dihedral
+        template: all_nucleotide_chi    # purine_chi | guanine_chi | pyrimidine_chi
+
+      - type: cmap
+        selection: backbone             # backbone | heavy | MDTraj expression
+        signature_mode: top_k             # top_k | threshold | all
+        top_k: 500
+        binary_cutoff: 0.6
+```
+
+### CMAP only (`features.encoder: cmap`)
+
+```yaml
+features:
+  encoder: cmap
+  params:
+    selection: backbone
+    signature_mode: top_k
+    top_k: 500
+    binary_cutoff: 0.6
+```
+
+### Cache outputs
+
+| File | Content |
+|------|---------|
+| `{prefix}.npy` | Feature matrix |
+| `{prefix}_meta.json` | `n_continuous`, `n_binary`, encoder info |
+| `{prefix}_signature.json` | Fixed atom pairs / dihedrals |
+
+See `configs/train_composite.yaml` and `configs/train_cmap.yaml`.
+
+---
+
+## Custom encoder (escape hatch)
+
+### How it works (4 files)
 
 | File | Role |
 |------|------|

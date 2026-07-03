@@ -96,7 +96,8 @@ sbatch slurm/train_ensemble.slurm
 |------|---------|
 | `configs/train_ensemble.yaml` | Train ensemble of 5 models |
 | `configs/train_single.yaml` | Train a single model |
-| `configs/default_rna.yaml` | Full config (train + eval settings) |
+| `configs/train_composite.yaml` | Generalized composite encoder (`preset: rna_general`) |
+| `configs/train_cmap.yaml` | CMAP-only encoder (top-K contacts) |
 
 Key YAML sections:
 
@@ -189,4 +190,6 @@ Training and evaluation are **independent**: you can re-run `evaluate.py` on exi
 
 ## Adding a custom feature encoder
 
-See [`features/GUIDE.md`](features/GUIDE.md).
+See [`features/GUIDE.md`](features/GUIDE.md). For most systems use `features.encoder: composite` with a preset or custom `blocks` — no new Python required.
+
+Legacy G-quadruplex encoder: `features.encoder: rna_g4_enriched`.

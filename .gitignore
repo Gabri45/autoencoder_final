@@ -3,3 +3,4 @@
 *.slurm
 *.npy
 *.log
+.venv/
