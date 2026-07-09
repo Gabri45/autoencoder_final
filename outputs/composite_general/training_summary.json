@@ -1,0 +1,16 @@
+{
+  "mode": "single",
+  "elapsed_seconds": 840.1272501945496,
+  "best_models": {
+    "0": {
+      "model_id": 0,
+      "best_epoch": 26,
+      "val_loss": 137.7082815573249,
+      "checkpoint": "/home/gabriele/autoencoder_final/outputs/composite_general/vae_model.pt"
+    }
+  },
+  "checkpoints": [
+    "/home/gabriele/autoencoder_final/outputs/composite_general/vae_model.pt"
+  ],
+  "output_dir": "/home/gabriele/autoencoder_final/outputs/composite_general"
+}

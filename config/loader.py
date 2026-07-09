@@ -28,7 +28,7 @@ DEFAULTS: dict[str, Any] = {
     },
     "features": {
         "encoder": "rna_g4_enriched",
-        "params": {"hbond_cutoff": 0.35},
+        "params": {},
         "cache_prefix": "features_mixed",
     },
     "training": {

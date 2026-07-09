@@ -16,6 +16,36 @@ import numpy as np
 from utils.qscore import best_hummer_q
 
 
+def resolve_topology(traj_dir: str, topology_glob: str = "init_conf.gro") -> str | None:
+    """
+    Find topology file for a merged trajectory directory.
+
+    1. Try topology_glob relative to traj_dir (e.g. hopfield_0/init_conf.gro).
+    2. If missing and glob is the default, use RMD_SCPS-style fallbacks:
+       hopfield_*/init_conf.gro, hopfield_0/, files/, then traj_dir root.
+    """
+    top_files = glob.glob(os.path.join(traj_dir, topology_glob))
+    if top_files:
+        return sorted(top_files)[0]
+
+    if topology_glob not in ("init_conf.gro", "auto"):
+        return None
+
+    hopfield_gros = sorted(glob.glob(os.path.join(traj_dir, "hopfield_*", "init_conf.gro")))
+    if hopfield_gros:
+        return hopfield_gros[0]
+
+    for candidate in (
+        os.path.join(traj_dir, "hopfield_0", "init_conf.gro"),
+        os.path.join(traj_dir, "files", "init_conf.gro"),
+        os.path.join(traj_dir, "init_conf.gro"),
+    ):
+        if os.path.exists(candidate):
+            return candidate
+
+    return None
+
+
 def load_merged_trajectories(
     data_dir: str,
     conf_dir: str,
@@ -60,15 +90,16 @@ def load_merged_trajectories(
         parts = merged_xtc.split(os.sep)
         iter_name = parts[-3]
         ratchet_name = parts[-2]
+        iter_num = iter_name.removeprefix("iter_")
+        ratchet_num = ratchet_name.removeprefix("ratchet_")
         traj_name = f"{iter_name}/{ratchet_name}"
 
-        top_files = glob.glob(os.path.join(traj_dir, topology_glob))
-        if not top_files:
-            print(f"  Skipping {traj_name}: no topology found")
+        top_file = resolve_topology(traj_dir, topology_glob)
+        if top_file is None:
+            print(f"  Skipping iter={iter_num} ratchet={ratchet_num}: no topology found")
             continue
 
-        top_file = sorted(top_files)[0]
-
+        top_rel = os.path.relpath(top_file, data_dir)
         try:
             traj = md.load(merged_xtc, top=top_file, stride=stride)
 
@@ -101,7 +132,10 @@ def load_merged_trajectories(
                 print(f"      Frame {start_f:4d} - {len(labels_final)-1:4d}: Label {prev_label}")
 
             all_trajs.append(traj)
-            print(f"  Loaded {traj_name}: {traj.n_frames} frames")
+            print(
+                f"  Loaded iter={iter_num} ratchet={ratchet_num} "
+                f"({traj_name}): {traj.n_frames} frames | init_conf: {top_rel}"
+            )
 
         except Exception as e:
             print(f"  Error loading {traj_name}: {e}")

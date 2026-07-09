@@ -1,28 +1,21 @@
-# Generalized composite encoder — works for any RNA system with a reference structure.
-# Uses preset rna_general: WC distances + chi + CMAP top-500 + binary masks.
-# Set data.recompute_features: true on first run.
-
 project:
-  output_dir: ./outputs/composite_general
+  output_dir: /home/gabriele/autoencoder_final/outputs/composite_general
   seed: 42
-
 data:
-  data_dir: /home/gabriele/RMD_SCPS/rna/data
-  conf_dir: /home/gabriele/RMD_SCPS/rna/conf
-  trajectory_glob: "iter_*/ratchet_*/merged_trajectory.xtc"
-  topology_glob: "init_conf.gro"
+  trajectory_glob: iter_*/ratchet_*/merged_trajectory.xtc
   stride: 1
   recompute_features: true
-
+  topology_glob: init_conf.gro
+  data_dir: /home/gabriele/RMD_SCPS/rna/data
+  conf_dir: /home/gabriele/RMD_SCPS/rna/conf
 features:
   encoder: composite
   params:
-    # reference_pdb: auto from conf_dir/*.pdb if omitted
     preset: rna_general
   cache_prefix: features_composite
-
 training:
   mode: single
+  n_ensemble: 5
   epochs: 50
   batch_size: 128
   lr: 0.001
@@ -39,13 +32,11 @@ training:
   model:
     latent_dim: 2
     n_classes: 5
-
 monitoring:
   log_every_epochs: 1
   plot_every_epochs: 10
   save_csv: true
   flush_stdout: true
-
 evaluation:
   mode: auto
   plots:
@@ -60,5 +51,27 @@ evaluation:
     landscape_comparison: false
   by_target:
     enabled: false
+    folding_report: null
+    data_dir: null
+    trajectory_glob: null
+    white_style: true
+    output_subdir: null
+    suffix: _reference_ensemble_classic
   new_dataset:
     enabled: false
+    data_dir: null
+    conf_dir: null
+    folding_report: null
+    trajectory_glob: iter_*/ratchet_*/md_noPBC.xtc
+    cache_prefix: features_new
+    output_subdir: new_dataset
+    reference_latent: null
+    recompute_features: false
+    per_target: null
+    plot_latent_overview: true
+    plot_landscape_grid: false
+    plot_uncertainty: false
+    landscape_grid_ncols: 5
+    white_style: false
+    suffix: _NEW
+    batch_size: 2048

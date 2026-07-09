@@ -1,0 +1,32 @@
+{
+  "n_continuous": 551,
+  "n_binary": 507,
+  "encoder": "composite",
+  "encoder_info": {
+    "name": "composite",
+    "class": "CompositeEncoder",
+    "preset": "rna_general",
+    "reference_pdb": "/home/gabriele/RMD_SCPS/rna/conf/1.pdb",
+    "blocks": [
+      {
+        "type": "distance_pairs",
+        "template": "watson_crick",
+        "transform": "raw_distance",
+        "binary_cutoff_nm": 0.35,
+        "spatial_filter_nm": 0.45
+      },
+      {
+        "type": "dihedral",
+        "template": "all_nucleotide_chi"
+      },
+      {
+        "type": "cmap",
+        "selection": "backbone",
+        "signature_mode": "top_k",
+        "top_k": 500,
+        "binary_cutoff": 0.6
+      }
+    ]
+  },
+  "n_features": 1058
+}

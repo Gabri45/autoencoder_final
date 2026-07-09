@@ -61,7 +61,7 @@ def load_features(output_dir: str, cache_prefix: str = "features_mixed"):
     return features, traj_labels, traj_indices, n_continuous, n_binary
 
 
-def load_single_artifacts(output_dir: str, device: str = "cpu"):
+def load_single_artifacts(output_dir: str, device: str = "cpu", cache_prefix: str = "features_mixed"):
     """Load single-model checkpoint and scaler."""
     model_path = os.path.join(output_dir, "vae_model.pt")
     scaler_path = os.path.join(output_dir, "scaler.pkl")
@@ -83,7 +83,9 @@ def load_single_artifacts(output_dir: str, device: str = "cpu"):
     with open(scaler_path, "rb") as f:
         scaler = pickle.load(f)
 
-    features, traj_labels, traj_indices, n_continuous, n_binary = load_features(output_dir)
+    features, traj_labels, traj_indices, n_continuous, n_binary = load_features(
+        output_dir, cache_prefix=cache_prefix
+    )
 
     return {
         "mode": "single",
@@ -98,7 +100,7 @@ def load_single_artifacts(output_dir: str, device: str = "cpu"):
     }
 
 
-def load_ensemble_artifacts(output_dir: str, device: str = "cpu"):
+def load_ensemble_artifacts(output_dir: str, device: str = "cpu", cache_prefix: str = "features_mixed"):
     """Load ensemble models and scaler."""
     scaler_path = os.path.join(output_dir, "ensemble_scaler.pkl")
     if not os.path.exists(scaler_path):
@@ -127,7 +129,9 @@ def load_ensemble_artifacts(output_dir: str, device: str = "cpu"):
         model.eval()
         models.append(model)
 
-    features, traj_labels, traj_indices, n_continuous, n_binary = load_features(output_dir)
+    features, traj_labels, traj_indices, n_continuous, n_binary = load_features(
+        output_dir, cache_prefix=cache_prefix
+    )
 
     return {
         "mode": "ensemble",
@@ -145,6 +149,7 @@ def load_ensemble_artifacts(output_dir: str, device: str = "cpu"):
 def load_artifacts(config: dict):
     """Load artifacts according to config mode (auto-detect or explicit)."""
     output_dir = config["project"]["output_dir"]
+    cache_prefix = config.get("features", {}).get("cache_prefix", "features_mixed")
     eval_mode = config.get("evaluation", {}).get("mode", "auto")
     device_name = config.get("training", {}).get("device", "cuda")
     if device_name == "cuda" and not torch.cuda.is_available():
@@ -153,9 +158,9 @@ def load_artifacts(config: dict):
 
     mode = detect_mode(output_dir, eval_mode)
     if mode == "ensemble":
-        artifacts = load_ensemble_artifacts(output_dir, device)
+        artifacts = load_ensemble_artifacts(output_dir, device, cache_prefix=cache_prefix)
     else:
-        artifacts = load_single_artifacts(output_dir, device)
+        artifacts = load_single_artifacts(output_dir, device, cache_prefix=cache_prefix)
         artifacts["model"] = artifacts["model"].to(device)
 
     artifacts["config"] = config

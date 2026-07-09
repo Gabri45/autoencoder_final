@@ -1,0 +1,53 @@
+TrainingMonitor initialized
+Output directory: /home/gabriele/autoencoder_final/outputs/composite_general
+TrainingMonitor initialized
+Output directory: /home/gabriele/autoencoder_final/outputs/composite_general
+TrainingMonitor initialized
+Output directory: /home/gabriele/autoencoder_final/outputs/composite_general
+Saved scaler to /home/gabriele/autoencoder_final/outputs/composite_general/scaler.pkl
+Training single model on cuda:0
+[model 0] Epoch    1: Train=201.3698, Val=169.0203, β=0.050
+[model 0] Epoch    2: Train=175.2422, Val=201.8897, β=0.100
+[model 0] Epoch    3: Train=180.1926, Val=166.0424, β=0.150
+[model 0] Epoch    4: Train=166.4173, Val=152.3049, β=0.200
+[model 0] Epoch    5: Train=161.1013, Val=155.0715, β=0.250
+[model 0] Epoch    6: Train=158.1331, Val=149.1523, β=0.300
+[model 0] Epoch    7: Train=155.9307, Val=147.0421, β=0.350
+[model 0] Epoch    8: Train=153.9601, Val=143.9624, β=0.400
+[model 0] Epoch    9: Train=152.9603, Val=142.8643, β=0.450
+[model 0] Epoch   10: Train=151.3577, Val=143.5406, β=0.500
+[model 0] Epoch   11: Train=151.0004, Val=144.9140, β=0.550
+[model 0] Epoch   12: Train=149.8627, Val=141.0832, β=0.600
+[model 0] Epoch   13: Train=149.7800, Val=143.0393, β=0.650
+[model 0] Epoch   14: Train=149.0703, Val=139.8433, β=0.700
+[model 0] Epoch   15: Train=147.9181, Val=143.0191, β=0.750
+[model 0] Epoch   16: Train=147.6723, Val=141.4841, β=0.800
+[model 0] Epoch   17: Train=147.8163, Val=141.2004, β=0.850
+[model 0] Epoch   18: Train=148.3169, Val=139.2594, β=0.900
+[model 0] Epoch   19: Train=148.5694, Val=143.0588, β=0.950
+[model 0] Epoch   20: Train=147.6235, Val=143.0137, β=1.000
+[model 0] Epoch   21: Train=146.1770, Val=138.3355, β=1.000
+[model 0] Epoch   22: Train=147.3048, Val=142.4631, β=1.000
+[model 0] Epoch   23: Train=146.8127, Val=140.7608, β=1.000
+[model 0] Epoch   24: Train=151.4777, Val=148.9944, β=1.000
+[model 0] Epoch   25: Train=149.8147, Val=141.6661, β=1.000
+[model 0] Epoch   26: Train=146.4593, Val=137.7083, β=1.000
+[model 0] Epoch   27: Train=146.6600, Val=140.5884, β=1.000
+[model 0] Epoch   28: Train=146.2825, Val=139.7917, β=1.000
+[model 0] Epoch   29: Train=145.8760, Val=140.5607, β=1.000
+[model 0] Epoch   30: Train=146.4572, Val=139.2513, β=1.000
+[model 0] Epoch   31: Train=146.5251, Val=142.0174, β=1.000
+[model 0] Epoch   32: Train=149.2387, Val=139.4010, β=1.000
+[model 0] Epoch   33: Train=150.7700, Val=160.6581, β=1.000
+[model 0] Epoch   34: Train=168.7451, Val=156.2502, β=1.000
+[model 0] Epoch   35: Train=164.2704, Val=154.1772, β=1.000
+[model 0] Epoch   36: Train=163.7158, Val=158.0632, β=1.000
+[model 0] Epoch   37: Train=164.9835, Val=154.1981, β=1.000
+[model 0] Epoch   38: Train=159.0949, Val=151.4353, β=1.000
+[model 0] Epoch   39: Train=157.0533, Val=149.6431, β=1.000
+[model 0] Epoch   40: Train=155.8960, Val=150.3459, β=1.000
+[model 0] Epoch   41: Train=155.3247, Val=147.9208, β=1.000
+Early stopping at epoch 41
+Best val loss 137.7083 at epoch 26
+Training complete in 840.1s
+Summary saved to /home/gabriele/autoencoder_final/outputs/composite_general/training_summary.json

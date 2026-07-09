@@ -41,10 +41,32 @@ def _resolve_reference_pdb(config: dict) -> str | None:
     return ref
 
 
+_ENCODER_PARAM_KEYS: dict[str, frozenset[str]] = {
+    "rna_g4_enriched": frozenset({"hbond_cutoff"}),
+    "composite": frozenset({"blocks", "preset", "reference_pdb"}),
+    "cmap": frozenset({
+        "reference_pdb",
+        "selection",
+        "min_residues_apart",
+        "signature_mode",
+        "top_k",
+        "threshold",
+        "distance_scale_angstrom",
+        "binary_cutoff",
+    }),
+}
+
+
 def _encoder_params(config: dict) -> dict:
     feat_cfg = config.get("features", {})
+    encoder_name = feat_cfg.get("encoder", "")
     params = dict(feat_cfg.get("params") or {})
-    if feat_cfg.get("encoder") in ("composite", "cmap"):
+
+    allowed = _ENCODER_PARAM_KEYS.get(encoder_name)
+    if allowed is not None:
+        params = {k: v for k, v in params.items() if k in allowed}
+
+    if encoder_name in ("composite", "cmap"):
         ref = _resolve_reference_pdb(config)
         if ref:
             params.setdefault("reference_pdb", ref)
